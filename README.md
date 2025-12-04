@@ -3,7 +3,7 @@
 <div align="center">
 
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-ffd21e)](https://huggingface.co/zai-org/SSVAE)
-[![魔搭社区](https://img.shields.io/badge/魔搭社区-模型-146EF5?logo=robot&logoColor=white)](https://modelscope.cn/models/ZhipuAI/SSVAE)
+[![魔搭社区](https://img.shields.io/badge/魔搭社区-模型-146EF5?logo=githubactions&logoColor=white)](https://modelscope.cn/models/ZhipuAI/SSVAE)
 [![Website](https://img.shields.io/badge/Website-Project%20Page-blue)](https://example.com)
 
 </div>
@@ -52,6 +52,7 @@ Structure your dataset as follows:
 
 - tar files: Each tar should pack multiple video samples. Each sample contains at least ".mp4" and ".id" files. The "
   .id" file must exist, but the content is not important.
+
 - meta files: Each line is a JSON object describing metadata for videos within the corresponding tar. Necessary fields
   include key (video name), duration, fps.
   Example contents for 000000.meta.jsonl:
@@ -106,11 +107,9 @@ python reconstruction.py --config configs/inference.yaml --input assets/video/00
 > `torchvision` (where `torchvision.transforms.functional_tensor` has been
 > removed).
 >
-> There are two common ways to fix this:
-> 1. **Patch `pytorchvideo` locally (recommended)**  
->    Edit the file  
->    `venv/lib/python3.*/site-packages/pytorchvideo/transforms/augmentations.py`  
->    and replace:
+> Here is the way to fix it:
+>
+>    Edit the file `venv/lib/python3.*/site-packages/pytorchvideo/transforms/augmentations.py` and replace:
 >    ```python
 >    import torchvision.transforms.functional_tensor as F_t
 >    ```
@@ -118,8 +117,10 @@ python reconstruction.py --config configs/inference.yaml --input assets/video/00
 >    ```python
 >    from torchvision.transforms import functional as F_t
 >    ```
+
         (int(img.shape[1] * r), int(img.shape[0] * r)),
->    Then rerun the inference command.
+
+> Then rerun the inference command.
 
 ### Generation Training
 
