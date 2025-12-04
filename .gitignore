@@ -1,0 +1,29 @@
+output
+
+# extensions
+*.egg-info
+*.py[cod]
+__pycache__/
+
+# envs
+.pt13
+.pt2
+
+# directories
+/checkpoints
+/dist
+/outputs
+/build
+/src
+
+logs/
+training_logs/
+visualizations/
+
+*.pt
+*.gif
+*.log
+*.pth
+*.json
+
+.idea

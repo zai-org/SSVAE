@@ -1,0 +1,45 @@
+model:
+  target: ssvae.models.autoencoder.VideoAutoencoderInferenceWrapper
+  params:
+    ckpt_path: "/opensource/SSVAE/ch48_256p_15w_512p_5w.ckpt"
+    mean: [-0.1962890625, 0.52734375, -1.3984375, 0.57421875, 0.09326171875, 0.734375, -0.427734375, -0.50390625, 0.54296875, 0.0986328125, -0.67578125, 0.15625, 0.9453125, -0.091796875, 0.2333984375, -0.10986328125, -0.049560546875, 0.74609375, -0.76171875, -0.484375, 0.2236328125, 0.5390625, 0.2255859375, -0.474609375, -0.126953125, -0.0341796875, 0.023681640625, -0.0211181640625, -1.015625, -0.60546875, 0.98046875, -0.796875, -0.1884765625, -0.4296875, 0.283203125, 0.34375, -0.490234375, 0.021484375, 0.251953125, -0.08154296875, -0.5234375, 0.236328125, -0.1826171875, -0.73828125, -0.1796875, -0.6015625, 0.34375, -0.74609375]
+    std: [0.69140625, 0.98828125, 2.015625, 1.1640625, 0.64453125, 1.015625, 1.546875, 0.71484375, 1.359375, 0.96875, 2.0, 0.8828125, 1.40625, 1.046875, 0.85546875, 1.0234375, 0.88671875, 1.15625, 1.3125, 0.984375, 1.1328125, 1.8046875, 1.21875, 0.98046875, 1.0859375, 0.96875, 1.046875, 1.0234375, 1.515625, 1.234375, 1.796875, 1.5234375, 1.1015625, 1.1484375, 0.94140625, 1.1015625, 1.3203125, 1.2265625, 1.359375, 1.09375, 0.953125, 0.73046875, 0.97265625, 1.265625, 1.1953125, 1.1171875, 0.83203125, 1.4140625]    
+    ignore_keys: ['loss']
+    loss_config:
+      target: torch.nn.Identity
+    regularizer_config:
+      target: ssvae.modules.autoencoding.regularizers.DiagonalGaussianRegularizer
+    encoder_config:
+      target: ssvae.modules.autoencoding.vae.dc_3dvae.Encoder3D
+      params:
+        double_z: true
+        norm: rmsnorm
+        temporal_compress_times: 4
+        z_channels: 48
+        resolution: 256
+        in_channels: 3
+        out_ch: 3
+        ch: 32
+        num_mid_blocks: 2
+        temporal_upsample: [False, False, True, True]
+        ch_mult: [2, 4, 8, 16, 16]
+        attn_resolutions: []
+        num_res_blocks: 3
+        dropout: 0.0
+    decoder_config:
+      target: ssvae.modules.autoencoding.vae.dc_3dvae.Decoder3D
+      params:
+        double_z: true
+        norm: rmsnorm
+        temporal_compress_times: 4
+        z_channels: 48
+        resolution: 256
+        in_channels: 3
+        out_ch: 3
+        ch: 32
+        num_mid_blocks: 2
+        temporal_upsample: [True, True, False, False]
+        ch_mult: [2, 4, 8, 16, 16]
+        attn_resolutions: []
+        num_res_blocks: 3
+        dropout: 0.0
