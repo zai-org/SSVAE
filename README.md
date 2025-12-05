@@ -4,7 +4,7 @@
 
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-ffd21e)](https://huggingface.co/zai-org/SSVAE)
 [![魔搭社区](https://img.shields.io/badge/魔搭社区-模型-146EF5?logo=githubactions&logoColor=white)](https://modelscope.cn/models/ZhipuAI/SSVAE)
-[![Website](https://img.shields.io/badge/Website-Project%20Page-blue)](https://example.com)
+[![Website](https://img.shields.io/badge/Website-Project%20Page-blue)](https://zhazhan.github.io/ssvae.github.io)
 
 </div>
 
@@ -128,9 +128,3 @@ Generation training can be achieved by integrating SSVAE into an existing text-t
 you can replace the "sat/sgm" directory of [CogVideo](https://github.com/zai-org/CogVideo) with the "ssvae" directory
 from this repository and update the VAE inference configuration files accordingly to enable text-to-video training.
 
-### Citation
-
-If you find this repository helpful, please consider citing our work:
-
-```
-```
