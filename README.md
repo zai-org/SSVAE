@@ -90,13 +90,13 @@ bash scripts/train.sh configs/ch48_LCR_LMR_512p_DecoderFinetune.yaml ch48_LCR_LM
 
 ### Inference
 
-The default inference entrypoint is provided by scripts/inference.sh. To run reconstruction using a pretrained VAE, use:
+You can download our pre-trained model from [https://huggingface.co/zai-org/SSVAE](https://huggingface.co/zai-org/SSVAE). The default inference entrypoint is provided by scripts/inference.sh. To run reconstruction using our pretrained VAE, use:
 
 ```bash
 python reconstruction.py --config configs/inference.yaml --input assets/video/0001.mp4 --output output/
 ```
 
-> Note: Download a pretrained VAE and specify its path in the config:
+> Note: Specify the path of the downloaded pretrained model in the config:
 > ```
 > ckpt_path: "SSVAE/ch48_256p_15w_512p_5w.ckpt" ## Replace with your actual path
 > ```
