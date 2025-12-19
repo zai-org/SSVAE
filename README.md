@@ -63,6 +63,8 @@ Structure your dataset as follows:
    {"key": "1000000007", "duration": 29.5, "fps": 30, ...}
    ```
 
+**We provide example training data for both images and videos in the "data_example" directory.**
+
 > Note: Before training, update the train: dataset path in the config files to your actual data directory.
 > Multiple paths can be separated by commas:
 > ```

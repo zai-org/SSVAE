@@ -1,0 +1,157 @@
+model:
+  base_learning_rate: 5e-5
+  target: ssvae.models.autoencoder.VideoAutoencodingEngine
+  params:
+    image_video_weights: [1, 7]
+    input_key: mp4
+    monitor: val/rec_loss
+    # SSVAE LMR config
+    lmr_config:
+      mask_probs: 
+        256: [0.7, 0.1, 0.1, 0.1]
+        512: [0.6, 0.1, 0.15, 0.15]
+      block_sizes:
+        256: [1, 1, 1]
+        512: [2, 2, 2]
+
+    scheduler_config:
+      target: ssvae.lr_scheduler.LambdaWarmUpCosineScheduler
+      params:
+        warm_up_steps: 1000
+        lr_min: 2e-6
+        lr_max: -1 # not used
+        lr_start: 2e-6
+        max_decay_steps: 600000
+
+    loss_config:
+      target: ssvae.modules.autoencoding.losses.loss_factory.GeneralLPIPSWithDiscriminator
+      params:
+        dims: 3
+        perceptual_weight: 1
+        disc_start: 25001
+        disc_weight: 1
+        learn_logvar: True
+        # SSVAE LCR loss config
+        lcr_config:
+          weight: 0.02
+          thresh: 0.75
+
+        regularization_weights:
+          kl_loss: 5e-4
+
+        discriminator_config:
+          target: ssvae.modules.autoencoding.losses.patchgan.PatchGANImageVideoDisc
+          params:
+            in_channels: 3
+            ndf: 64
+            max_spatial_down: 16
+            max_temporal_down: 4
+
+    regularizer_config:
+      target: ssvae.modules.autoencoding.regularizers.DiagonalGaussianRegularizer
+      params:
+        average_kl_loss: False
+        report_mean_klloss: True
+        # SSVAE LCR calculation config
+        lcr_config:
+          window_size: [2, 2, 2]
+
+    encoder_config:
+      target: ssvae.modules.autoencoding.vae.dc_3dvae.Encoder3D
+      params:
+        double_z: true
+        norm: rmsnorm
+        temporal_compress_times: 4
+        z_channels: 48
+        resolution: 256
+        in_channels: 3
+        out_ch: 3
+        ch: 32
+        num_mid_blocks: 2
+        temporal_upsample: [False, False, True, True]
+        ch_mult: [2, 4, 8, 16, 16]
+        attn_resolutions: []
+        num_res_blocks: 3
+        dropout: 0.0
+
+    decoder_config:
+      target: ssvae.modules.autoencoding.vae.dc_3dvae.Decoder3D
+      params:
+        double_z: true
+        norm: rmsnorm
+        temporal_compress_times: 4
+        z_channels: 48
+        resolution: 256
+        in_channels: 3
+        out_ch: 3
+        ch: 32
+        num_mid_blocks: 2
+        temporal_upsample: [True, True, False, False]
+        ch_mult: [2, 4, 8, 16, 16]
+        attn_resolutions: []
+        num_res_blocks: 3
+        dropout: 0.0
+
+lightning:
+  modelcheckpoint:
+    params:
+      every_n_train_steps: 1000
+      save_top_k: -1
+
+  callbacks:
+    metrics_over_trainsteps_checkpoint:
+      params:
+        every_n_train_steps: 25000
+
+    video_logger:
+      target: main.VideoLogger
+      params:
+        disabled: False
+        enable_autocast: False
+        batch_frequency: 1000
+        max_videos: 8
+        increase_log_steps: True
+        log_first_step: True
+        log_videos_kwargs:
+          N: 8
+          n_rows: 2
+
+  trainer:
+    devices: 0,1,2,3,4,5,6,7
+    num_nodes: 4
+    precision: bf16-mixed
+    benchmark: True
+    num_sanity_val_steps: 0
+    accumulate_grad_batches: 1
+    max_epochs: 1
+    max_steps: 150000
+
+data:
+  target: ssvae.data.video_data_wds.VideoDataModuleFromConfig
+  params:
+    num_workers: 8
+    prefetch_factor: 8
+    batch_size: 1
+
+    train:
+      target: ssvae.data.video_data_wds.IVAlterstepDataset
+      params:
+        image_video_weights: [1, 7]
+        image_ds_config:
+          target: ssvae.data.video_data_wds.ImageWebDataset
+          params:
+            path: ";data_example/image"
+            image_size: [256, 256]
+            seed: 0
+        video_ds_config:
+          target: ssvae.data.video_data_wds.VideoWebDataset
+          params:
+            path: ";data_example/video"
+            meta_names: ['duration', 'fps']
+            image_size: [256, 256]
+            num_frames: 17
+            fps: 8
+            shuffle_buffer: 20
+            seed: 0
+        image_batch_size: 6
+        video_batch_size: 1
