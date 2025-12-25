@@ -316,9 +316,6 @@ def init_wandb(save_dir, opt, config, name_str):
     if opt.debug:
         wandb.init(project=opt.projectname, mode="offline")
     else:
-        os.environ['WANDB_BASE_URL'] = 'https://wandb.glm.ai'
-        os.environ['WANDB_ENTITY'] = 'cogview'
-        os.environ['WANDB_API_KEY'] = 'local-03299582765efc8761790558efe2cd0aa67573bf'
         wandb.init(project=opt.projectname, name=name_str, resume=(opt.resume is not None))
 
 
